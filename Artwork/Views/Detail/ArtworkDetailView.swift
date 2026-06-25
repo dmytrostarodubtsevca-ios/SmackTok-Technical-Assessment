@@ -36,13 +36,12 @@ struct ArtworkDetailView: View {
 
     @ViewBuilder
     private var image: some View {
-        AsyncImage(url: viewModel.imageURL) { phase in
-            switch phase {
-            case .success(let image):
-                image.resizable().scaledToFit()
-            case .empty where viewModel.imageURL != nil:
+        CachedAsyncImage(url: viewModel.imageURL) { image in
+            image.resizable().scaledToFit()
+        } placeholder: {
+            if viewModel.imageURL != nil {
                 ProgressView().frame(height: 240)
-            default:
+            } else {
                 Image(systemName: "photo")
                     .font(.largeTitle)
                     .foregroundStyle(.secondary)
