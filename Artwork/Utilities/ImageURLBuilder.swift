@@ -14,8 +14,11 @@ import Foundation
 /// hardcoded, so it tracks the contract. Returns `nil` when the artwork has no
 /// `imageId`, which callers use to show a placeholder instead of a broken image.
 enum ImageURLBuilder {
-    /// Default rendition width requested from the IIIF server.
+    /// Default rendition width requested from the IIIF server (list thumbnails).
     static let defaultWidth = 400
+
+    /// Larger rendition for the full-screen detail view.
+    static let detailWidth = 843
 
     /// The IIIF base URL. Stable across responses (verified against the API's
     /// `config.iiif_url`), so it's a constant rather than threaded through every

@@ -23,6 +23,9 @@ struct ArtworkListView: View {
         NavigationStack {
             content
                 .navigationTitle(Strings.List.title)
+                .navigationDestination(for: ArtworkModel.self) { artwork in
+                    ArtworkDetailView(viewModel: ArtworkDetailViewModel(artwork: artwork))
+                }
                 .searchable(text: $query, prompt: Strings.List.searchPrompt)
                 .onChange(of: query) { _, newValue in
                     // The view model debounces and cancels in-flight work, so
@@ -57,8 +60,10 @@ struct ArtworkListView: View {
     private var list: some View {
         List {
             ForEach(viewModel.artworks) { artwork in
-                ArtworkRow(viewModel: ArtworkRowViewModel(artwork: artwork))
-                    .onAppear { loadMoreIfNeeded(currentItem: artwork) }
+                NavigationLink(value: artwork) {
+                    ArtworkRow(viewModel: ArtworkRowViewModel(artwork: artwork))
+                }
+                .onAppear { loadMoreIfNeeded(currentItem: artwork) }
             }
 
             if viewModel.isLoadingNextPage {

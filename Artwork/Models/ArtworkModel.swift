@@ -12,7 +12,7 @@ import Foundation
 /// Only `id` is guaranteed by the API; every descriptive field is optional
 /// because the collection contains records with missing metadata. The UI is
 /// responsible for rendering sensible fallbacks (e.g. "Unknown artist").
-struct ArtworkModel: Identifiable, Equatable, Codable {
+struct ArtworkModel: Identifiable, Equatable, Hashable, Codable {
     let id: Int
     let title: String?
     let artistDisplay: String?
