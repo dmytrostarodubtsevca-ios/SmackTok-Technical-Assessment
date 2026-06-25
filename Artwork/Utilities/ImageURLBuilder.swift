@@ -17,7 +17,16 @@ enum ImageURLBuilder {
     /// Default rendition width requested from the IIIF server.
     static let defaultWidth = 400
 
-    static func url(imageId: String?, iiifBase: String, width: Int = defaultWidth) -> URL? {
+    /// The IIIF base URL. Stable across responses (verified against the API's
+    /// `config.iiif_url`), so it's a constant rather than threaded through every
+    /// layer for a value that never changes.
+    static let defaultBase = "https://www.artic.edu/iiif/2"
+
+    static func url(
+        imageId: String?,
+        iiifBase: String = defaultBase,
+        width: Int = defaultWidth
+    ) -> URL? {
         guard let imageId, !imageId.isEmpty else { return nil }
         return URL(string: "\(iiifBase)/\(imageId)/full/\(width),/0/default.jpg")
     }
