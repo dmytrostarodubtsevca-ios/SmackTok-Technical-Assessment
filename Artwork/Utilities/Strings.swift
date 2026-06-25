@@ -19,4 +19,18 @@ enum Strings {
         static let unknownArtist = "Unknown artist"
         static let unknownDate = "Date unknown"
     }
+
+    enum Loading {
+        static let message = "Loading artworks…"
+    }
+
+    enum Empty {
+        static let title = "No artworks found"
+        static let message = "Try a different search."
+    }
+
+    enum Error {
+        static let title = "Something went wrong"
+        static let retry = "Try Again"
+    }
 }
