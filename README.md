@@ -31,12 +31,12 @@ through protocols only — View → ViewModel → Repository → Service — so 
 layer is swappable and testable in isolation without a live network.
 
 ```
-Models/       Pure value types: ArtworkModel (Codable), ArtworkPageModel
-Networking/   ArtworkServiceProtocol + URLSession implementation, APIError, DTO
+Models/       Pure value types: ArtworkModel (Codable), ArtworkPageModel, ArtworkDetailModel
+Networking/   ArtworkServiceProtocol (list/search/by-id) + URLSession impl, APIError, DTOs
 Repository/   ArtworkRepositoryProtocol — owns pagination + dedup state (@MainActor)
-ViewModels/   ArtworkListViewModel (@MainActor, ViewState) + row/detail view models
+ViewModels/   ArtworkListViewModel + row/detail view models (@MainActor, ViewState)
 Views/        SwiftUI screens, state views, CachedAsyncImage
-Utilities/    ImageURLBuilder, ImageCache, Strings
+Utilities/    ImageURLBuilder, ImageCache, Strings, String+HTML
 ```
 
 | Layer | Owns | Knows about | Doesn't know |
@@ -80,24 +80,21 @@ the end.
 
 **Completed (stretch)**
 - Detail screen with IIIF image rendering (handles null `image_id`)
+- **Rich detail via `/artworks/{id}`** — headline fields render instantly from
+  the list data, then a fetch-by-id fills in metadata rows (medium, dimensions,
+  origin, credit, department, type) and a sanitized HTML description, with its
+  own loading/failed state so a slow detail fetch never blocks the core info.
 - Debounced search
 - Accessibility — combined VoiceOver labels, Dynamic Type via semantic fonts
 - Deliberate image caching (`NSCache` behind `ImageCaching`, `CachedAsyncImage`)
 
 **Skipped (with reasoning)**
-- **Rich detail via `/artworks/{id}`** — the detail screen reuses the data
-  already in the list (no extra fetch). Fetching the fuller record (medium,
-  dimensions, provenance, description) is a clear next step but adds a second
-  endpoint, a stateful detail view model, and HTML handling — deferred to keep
-  scope focused. See next steps.
 - **Favorites + persistence** — needs a persistence decision (SwiftData vs.
   UserDefaults) and its own protocol/tests; more scope than signal here.
 - **Full offline caching** — `NSCache` gives a warm in-memory image cache, but
   true offline (response cache + invalidation) is out of scope.
 
 **Next steps**
-- Add `fetchArtwork(id:)` + `ArtworkDetailModel` for a richer detail screen,
-  with its own loading/error states and a sanitized `description`.
 - Pull-to-refresh on the list.
 - Favorites backed by SwiftData.
 - Disk-backed image cache for cross-launch persistence.

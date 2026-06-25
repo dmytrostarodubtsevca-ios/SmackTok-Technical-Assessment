@@ -17,8 +17,13 @@ struct ArtworkService: ArtworkServiceProtocol {
     private let session: URLSession
     private let baseURL = URL(string: "https://api.artic.edu/api/v1")!
 
-    /// Fields requested from the API — matches the keys `ArtworkModel` decodes.
+    /// Fields requested from the list/search endpoints — matches the keys
+    /// `ArtworkModel` decodes.
     private let fields = "id,title,artist_display,date_display,image_id"
+    /// Richer field set for the single-artwork endpoint.
+    private let detailFields = "id,title,artist_display,date_display,image_id," +
+        "medium_display,dimensions,place_of_origin,credit_line," +
+        "department_title,artwork_type_title,description"
     private let pageSize = 20
 
     init(session: URLSession = .shared) {
@@ -50,6 +55,14 @@ struct ArtworkService: ArtworkServiceProtocol {
         return try await load(url)
     }
 
+    func fetchArtwork(id: Int) async throws -> ArtworkDetailModel {
+        let url = makeURL(path: "artworks/\(id)", queryItems: [
+            URLQueryItem(name: "fields", value: detailFields)
+        ])
+        let data = try await requestData(from: url)
+        return try decode(ArtworkDetailResponseDTO.self, from: data).data
+    }
+
     // MARK: - Private
 
     private func makeURL(path: String, queryItems: [URLQueryItem]) -> URL {
@@ -62,6 +75,12 @@ struct ArtworkService: ArtworkServiceProtocol {
     }
 
     private func load(_ url: URL) async throws -> ArtworkPageModel {
+        let data = try await requestData(from: url)
+        return try decode(ArtworkResponseDTO.self, from: data).toPage()
+    }
+
+    /// Performs the request and validates the HTTP status, returning the body.
+    private func requestData(from url: URL) async throws -> Data {
         let data: Data
         let response: URLResponse
         do {
@@ -76,10 +95,12 @@ struct ArtworkService: ArtworkServiceProtocol {
         guard (200..<300).contains(http.statusCode) else {
             throw APIError.badStatus(http.statusCode)
         }
+        return data
+    }
 
+    private func decode<T: Decodable>(_ type: T.Type, from data: Data) throws -> T {
         do {
-            let dto = try Self.decoder.decode(ArtworkResponseDTO.self, from: data)
-            return dto.toPage()
+            return try Self.decoder.decode(T.self, from: data)
         } catch {
             throw APIError.decoding
         }

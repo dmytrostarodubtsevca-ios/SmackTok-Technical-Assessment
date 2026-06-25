@@ -60,11 +60,15 @@ final class ArtworkListViewModel: ArtworkListViewModelProtocol {
 
     func search(_ query: String) {
         searchTask?.cancel()
+        let isCleared = query.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
         searchTask = Task { [weak self] in
             guard let self else { return }
-            // Debounce: a newer keystroke cancels this task during the sleep.
-            try? await Task.sleep(for: searchDebounce)
-            guard !Task.isCancelled else { return }
+            // Debounce typing, but restore the first page immediately when the
+            // field is cleared — clearing shouldn't feel laggy.
+            if !isCleared {
+                try? await Task.sleep(for: searchDebounce)
+                guard !Task.isCancelled else { return }
+            }
 
             do {
                 try await repository.search(query)

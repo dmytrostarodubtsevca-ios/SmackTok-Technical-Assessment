@@ -15,8 +15,16 @@ struct ArtworkListView: View {
     @StateObject private var viewModel: ArtworkListViewModel
     @State private var query = ""
 
-    init(viewModel: ArtworkListViewModel) {
+    /// Builds a detail view model for a tapped artwork. Injected so the view
+    /// stays unaware of how the detail screen gets its service.
+    private let makeDetailViewModel: (ArtworkModel) -> ArtworkDetailViewModel
+
+    init(
+        viewModel: ArtworkListViewModel,
+        makeDetailViewModel: @escaping (ArtworkModel) -> ArtworkDetailViewModel
+    ) {
         _viewModel = StateObject(wrappedValue: viewModel)
+        self.makeDetailViewModel = makeDetailViewModel
     }
 
     var body: some View {
@@ -24,7 +32,7 @@ struct ArtworkListView: View {
             content
                 .navigationTitle(Strings.List.title)
                 .navigationDestination(for: ArtworkModel.self) { artwork in
-                    ArtworkDetailView(viewModel: ArtworkDetailViewModel(artwork: artwork))
+                    ArtworkDetailView(viewModel: makeDetailViewModel(artwork))
                 }
                 .searchable(text: $query, prompt: Strings.List.searchPrompt)
                 .onChange(of: query) { _, newValue in

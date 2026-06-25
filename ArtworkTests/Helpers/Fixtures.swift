@@ -94,6 +94,23 @@ enum Fixtures {
     }
     """
 
+    /// Single-artwork detail response: `data` is one object with rich fields,
+    /// and `description` carries HTML.
+    static let detailJSON = """
+    {
+      "data": {
+        "id": 16568, "title": "Water Lilies", "date_display": "1906",
+        "artist_display": "Claude Monet", "place_of_origin": "France",
+        "description": "<p>A water garden <em>obsession</em>.</p>",
+        "dimensions": "89.9 × 94.1 cm", "medium_display": "Oil on canvas",
+        "credit_line": "Ryerson Collection", "artwork_type_title": "Painting",
+        "department_title": "Painting and Sculpture of Europe",
+        "image_id": "3c27b499-af56-f0d5-93b5-a7f2f1ad5813"
+      },
+      "config": { "iiif_url": "https://www.artic.edu/iiif/2" }
+    }
+    """
+
     /// Structurally invalid for our model (missing `pagination`) — decode error.
     static let malformedJSON = """
     { "data": "not-an-array" }

@@ -20,22 +20,27 @@ final class MockArtworkService: ArtworkServiceProtocol, @unchecked Sendable {
     /// means "always return this".
     private let fetchResults: [Result<ArtworkPageModel, Error>]
     private let searchResults: [Result<ArtworkPageModel, Error>]
+    private let detailResult: Result<ArtworkDetailModel, Error>?
 
     private let lock = NSLock()
     private var fetchIndex = 0
     private var searchIndex = 0
     private var _fetchCalls: [Int] = []
     private var _searchCalls: [(query: String, page: Int)] = []
+    private var _detailCalls: [Int] = []
 
     var fetchCalls: [Int] { lock.withLock { _fetchCalls } }
     var searchCalls: [(query: String, page: Int)] { lock.withLock { _searchCalls } }
+    var detailCalls: [Int] { lock.withLock { _detailCalls } }
 
     init(
         fetchResults: [Result<ArtworkPageModel, Error>] = [],
-        searchResults: [Result<ArtworkPageModel, Error>] = []
+        searchResults: [Result<ArtworkPageModel, Error>] = [],
+        detailResult: Result<ArtworkDetailModel, Error>? = nil
     ) {
         self.fetchResults = fetchResults
         self.searchResults = searchResults
+        self.detailResult = detailResult
     }
 
     /// Convenience: a service that always returns `page` for both endpoints.
@@ -59,6 +64,16 @@ final class MockArtworkService: ArtworkServiceProtocol, @unchecked Sendable {
         try lock.withLock {
             _searchCalls.append((query, page))
             return try value(from: searchResults, index: &searchIndex)
+        }
+    }
+
+    func fetchArtwork(id: Int) async throws -> ArtworkDetailModel {
+        try lock.withLock {
+            _detailCalls.append(id)
+            guard let detailResult else {
+                throw APIError.invalidResponse
+            }
+            return try detailResult.get()
         }
     }
 

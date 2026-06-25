@@ -39,3 +39,8 @@ struct ArtworkResponseDTO: Decodable {
         )
     }
 }
+
+/// Wire shape of a single-artwork response, where `data` is one object.
+struct ArtworkDetailResponseDTO: Decodable {
+    let data: ArtworkDetailModel
+}

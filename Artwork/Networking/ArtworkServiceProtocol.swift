@@ -24,4 +24,7 @@ protocol ArtworkServiceProtocol {
     ///   - query: The user's search text.
     ///   - page: 1-based page index.
     func searchArtworks(query: String, page: Int) async throws -> ArtworkPageModel
+
+    /// Fetches the fuller record for a single artwork (`/artworks/{id}`).
+    func fetchArtwork(id: Int) async throws -> ArtworkDetailModel
 }

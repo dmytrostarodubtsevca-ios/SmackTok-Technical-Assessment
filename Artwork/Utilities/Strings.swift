@@ -38,4 +38,15 @@ enum Strings {
         static let title = "Something went wrong"
         static let retry = "Try Again"
     }
+
+    enum Detail {
+        static let type = "Type"
+        static let medium = "Medium"
+        static let dimensions = "Dimensions"
+        static let origin = "Origin"
+        static let department = "Department"
+        static let credit = "Credit"
+        static let about = "About:"
+        static let detailsUnavailable = "Couldn't load more details."
+    }
 }

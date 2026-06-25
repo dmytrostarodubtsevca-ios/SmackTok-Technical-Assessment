@@ -9,7 +9,7 @@
 //  is thread-safe and evicts under memory pressure.
 //
 
-import UIKit
+internal import UIKit
 
 protocol ImageCaching: Sendable {
     func image(for url: URL) -> UIImage?

@@ -113,6 +113,22 @@ struct ArtworkListViewModelTests {
         #expect(repo.searchedQueries == ["monet"])
     }
 
+    @Test func clearingSearchReloadsImmediately() async {
+        let repo = MockArtworkRepository()
+        repo.onSearch = { query in
+            repo.artworks = query.isEmpty ? [Fixtures.artwork(id: 1)] : [Fixtures.artwork(id: 2)]
+        }
+        // A long debounce that would hang the test if it were (incorrectly)
+        // applied to the cleared field.
+        let sut = makeSUT(repository: repo, debounce: .seconds(10))
+
+        sut.search("")
+        await sut.searchTask?.value
+
+        #expect(repo.searchedQueries == [""])
+        #expect(sut.artworks.map(\.id) == [1])
+    }
+
     @Test func rapidSearchAppliesOnlyLastQuery() async {
         let repo = MockArtworkRepository()
         repo.onSearch = { query in repo.artworks = [Fixtures.artwork(id: query.count)] }

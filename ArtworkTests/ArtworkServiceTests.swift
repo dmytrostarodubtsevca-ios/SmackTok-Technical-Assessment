@@ -72,6 +72,29 @@ struct ArtworkServiceTests {
         #expect(page.items.isEmpty)
     }
 
+    @Test func fetchArtworkDecodesRichFields() async throws {
+        let sut = makeSUT()
+        URLProtocolStub.stub(data: Fixtures.data(Fixtures.detailJSON))
+
+        let detail = try await sut.fetchArtwork(id: 16568)
+
+        #expect(detail.id == 16568)
+        #expect(detail.mediumDisplay == "Oil on canvas")
+        #expect(detail.placeOfOrigin == "France")
+        #expect(detail.creditLine == "Ryerson Collection")
+        #expect(detail.description?.contains("<em>") == true)
+    }
+
+    @Test func fetchArtworkBuildsByIDPath() async throws {
+        let sut = makeSUT()
+        URLProtocolStub.stub(data: Fixtures.data(Fixtures.detailJSON))
+
+        _ = try await sut.fetchArtwork(id: 16568)
+
+        let url = try #require(URLProtocolStub.requestedURLs.last)
+        #expect(url.path.hasSuffix("/artworks/16568"))
+    }
+
     // MARK: - Errors
 
     @Test func httpClientErrorThrowsBadStatus() async throws {
