@@ -20,6 +20,11 @@ enum Strings {
         static let unknownDate = "Date unknown"
     }
 
+    enum List {
+        static let title = "Artworks"
+        static let searchPrompt = "Search artworks"
+    }
+
     enum Loading {
         static let message = "Loading artworks…"
     }

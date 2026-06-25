@@ -11,7 +11,17 @@ import SwiftUI
 struct ArtworkApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            ArtworkListView(viewModel: makeListViewModel())
         }
+    }
+
+    /// Composition root: wires the concrete service → repository → view model.
+    /// The only place concrete types are assembled; everything below depends on
+    /// protocols.
+    @MainActor
+    private func makeListViewModel() -> ArtworkListViewModel {
+        let service = ArtworkService()
+        let repository = ArtworkRepository(service: service)
+        return ArtworkListViewModel(repository: repository)
     }
 }
