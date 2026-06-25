@@ -39,13 +39,14 @@ struct ArtworkRow: View {
 
     @ViewBuilder
     private var thumbnail: some View {
-        CachedAsyncImage(url: viewModel.imageURL) { image in
-            image.resizable().scaledToFill()
-        } placeholder: {
-            if viewModel.imageURL != nil {
+        CachedAsyncImage(url: viewModel.imageURL) { phase in
+            switch phase {
+            case .loading:
                 ProgressView()
-            } else {
-                // No image_id → neutral placeholder.
+            case .success(let image):
+                image.resizable().scaledToFill()
+            case .failure:
+                // No image_id, or the load failed → neutral placeholder.
                 Image(systemName: "photo")
                     .foregroundStyle(.secondary)
             }
