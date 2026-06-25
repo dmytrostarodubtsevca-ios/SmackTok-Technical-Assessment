@@ -81,6 +81,21 @@ struct ArtworkRepositoryTests {
         #expect(sut.artworks.count == 1)
     }
 
+    @Test func duplicateIDsAcrossPagesAreDropped() async throws {
+        // The API can re-list an artwork on a later page; the accumulated list
+        // must keep IDs unique so ForEach doesn't break.
+        let service = MockArtworkService(fetchResults: [
+            .success(page([1, 2], currentPage: 1, totalPages: 3)),
+            .success(page([2, 3], currentPage: 2, totalPages: 3))
+        ])
+        let sut = ArtworkRepository(service: service)
+
+        try await sut.loadNextPage()
+        try await sut.loadNextPage()
+
+        #expect(sut.artworks.map(\.id) == [1, 2, 3]) // 2 not duplicated
+    }
+
     // MARK: - Search
 
     @Test func searchResetsPaginationAndUsesSearchEndpoint() async throws {

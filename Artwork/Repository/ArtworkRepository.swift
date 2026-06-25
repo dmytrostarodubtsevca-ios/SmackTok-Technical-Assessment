@@ -34,6 +34,10 @@ final class ArtworkRepository: ArtworkRepositoryProtocol {
     private var currentPage = 0
     private var totalPages = 1
     private var isLoading = false
+    /// Tracks IDs already shown so pages that re-list an artwork (the API's
+    /// collection shifts as you paginate) don't introduce duplicate IDs, which
+    /// would break `ForEach`.
+    private var seenIDs: Set<Int> = []
 
     init(service: ArtworkServiceProtocol) {
         self.service = service
@@ -50,8 +54,10 @@ final class ArtworkRepository: ArtworkRepositoryProtocol {
         let nextPage = currentPage + 1
         let page = try await fetch(page: nextPage)
 
-        // Append rather than replace — pagination accumulates results.
-        artworks += page.items
+        // Append rather than replace — pagination accumulates results — while
+        // dropping any artwork already shown on an earlier page.
+        let newItems = page.items.filter { seenIDs.insert($0.id).inserted }
+        artworks += newItems
         currentPage = page.currentPage
         totalPages = page.totalPages
     }
@@ -79,6 +85,7 @@ final class ArtworkRepository: ArtworkRepositoryProtocol {
 
     private func reset() {
         artworks = []
+        seenIDs = []
         currentPage = 0
         totalPages = 1
     }
