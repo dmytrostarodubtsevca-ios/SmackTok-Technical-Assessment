@@ -50,6 +50,9 @@ struct ArtworkDetailView: View {
                     .background(Color(.secondarySystemBackground))
             }
         }
+        .accessibilityElement()
+        .accessibilityLabel(viewModel.title)
+        .accessibilityAddTraits(.isImage)
     }
 }
 

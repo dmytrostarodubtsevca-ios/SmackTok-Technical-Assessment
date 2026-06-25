@@ -23,4 +23,10 @@ struct ArtworkRowViewModel: Equatable {
         date = artwork.dateDisplay ?? Strings.Artwork.unknownDate
         imageURL = ImageURLBuilder.url(imageId: artwork.imageId)
     }
+
+    /// One spoken phrase for VoiceOver, so the row reads as a single element
+    /// ("title, artist, date") instead of three disjointed fragments.
+    var accessibilityLabel: String {
+        "\(title), \(artist), \(date)"
+    }
 }

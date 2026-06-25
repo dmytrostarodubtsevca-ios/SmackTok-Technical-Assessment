@@ -33,6 +33,8 @@ struct ArtworkRow: View {
             Spacer(minLength: 0)
         }
         .padding(.vertical, 4)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(viewModel.accessibilityLabel)
     }
 
     @ViewBuilder
@@ -52,6 +54,7 @@ struct ArtworkRow: View {
         .frame(width: 64, height: 64)
         .background(Color(.secondarySystemBackground))
         .clipShape(RoundedRectangle(cornerRadius: 8))
+        .accessibilityHidden(true) // decorative; the row label conveys the content
     }
 }
 

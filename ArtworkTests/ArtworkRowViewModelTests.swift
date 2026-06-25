@@ -48,4 +48,13 @@ struct ArtworkRowViewModelTests {
 
         #expect(sut.imageURL == nil)
     }
+
+    @Test func accessibilityLabelCombinesFields() {
+        let sut = ArtworkRowViewModel(artwork: ArtworkModel(
+            id: 1, title: "Water Lilies",
+            artistDisplay: "Claude Monet", dateDisplay: "1906", imageId: nil
+        ))
+
+        #expect(sut.accessibilityLabel == "Water Lilies, Claude Monet, 1906")
+    }
 }
